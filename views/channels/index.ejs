@@ -1,0 +1,43 @@
+<%- include("../partials/header") %>
+<main class="max-w-6xl mx-auto px-4 py-6 space-y-6">
+  <div class="flex items-center justify-between">
+    <h1 class="text-xl font-semibold">📺 Canales en vivo</h1>
+    <a href="/channels/new" class="text-sm rounded bg-blue-600 hover:bg-blue-500 px-3 py-1.5">+ Agregar canal</a>
+  </div>
+
+  <p class="text-xs text-neutral-500 border border-neutral-800 rounded-lg p-3">
+    El repositorio no incluye ningún enlace por defecto. Los canales que ves acá son los que vos (u otra
+    persona con acceso a esta instancia) cargaron manualmente. Usá solo enlaces que tengas derecho a
+    reproducir mediante los mecanismos de embedding oficiales de cada plataforma.
+    <a href="/legal/disclaimer" class="underline hover:text-neutral-300">Ver el disclaimer completo</a>.
+  </p>
+
+  <% if (channels.length === 0) { %>
+    <p class="text-neutral-500 text-sm">Todavía no cargaste ningún canal.</p>
+  <% } else { %>
+    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <% channels.forEach(c => { %>
+        <div class="rounded-lg border border-neutral-800 p-4">
+          <div class="flex items-center justify-between mb-1">
+            <p class="font-medium"><%= c.name %></p>
+            <span class="text-[10px] uppercase tracking-wide text-neutral-500"><%= c.type %></span>
+          </div>
+          <% if (c.sport || c.league) { %>
+            <p class="text-xs text-neutral-500 mb-2"><%= c.sport?.name %> <% if (c.league) { %>· <%= c.league.name %><% } %></p>
+          <% } %>
+          <% if (c.notes) { %>
+            <p class="text-xs text-neutral-400 mb-2"><%= c.notes %></p>
+          <% } %>
+          <div class="flex items-center justify-between">
+            <a class="text-blue-400 text-sm hover:underline" href="/channels/<%= c.id %>">▶ Ver</a>
+            <form method="POST" action="/channels/<%= c.id %>/delete">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+              <button class="text-xs text-neutral-500 hover:text-red-400">Eliminar</button>
+            </form>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</main>
+<%- include("../partials/footer") %>

@@ -1,0 +1,59 @@
+<%- include("../partials/header") %>
+<main class="max-w-6xl mx-auto px-4 py-6">
+  <h1 class="text-xl font-semibold mb-4">🏁 Resultados</h1>
+
+  <% function gameRow(g) { %>
+    <li class="p-4 flex items-center justify-between text-sm gap-4">
+      <a href="/partidos/<%= g.id %>" class="hover:text-neutral-300 min-w-0">
+        <span class="block truncate">
+          <%= g.homeTeam.name %> <b><%= g.homeScore %></b> - <b><%= g.awayScore %></b> <%= g.awayTeam.name %>
+        </span>
+        <% const round = findRound(g.statistics); %>
+        <% const champion = championName(g); %>
+        <% if (champion) { %>
+          <span class="text-xs text-amber-400">🏆 Campeón: <%= champion %></span>
+        <% } else if (round) { %>
+          <span class="text-xs text-neutral-500"><%= round %></span>
+        <% } %>
+      </a>
+      <span class="text-neutral-500 text-right shrink-0"><%= fmtDate(g.date) %></span>
+    </li>
+  <% } %>
+
+  <% if (groups) { %>
+    <% if (groups.length === 0) { %>
+      <p class="text-neutral-500 text-sm">
+        Todavía no hay resultados sincronizados. Probá forzar una sincronización desde
+        <a href="/panel" class="underline hover:text-neutral-300">Gestión</a>.
+      </p>
+    <% } else { %>
+      <div class="space-y-6">
+        <% groups.forEach(({ league, games }) => { %>
+          <section>
+            <h2 class="text-sm font-semibold text-neutral-400 mb-2"><%= league.sport.name %> · <%= league.name %></h2>
+            <% if (champions[league.slug]) { %>
+              <% championLines(champions[league.slug]).forEach(line => { %>
+                <p class="text-xs text-amber-400 mb-1"><%= line %></p>
+              <% }) %>
+            <% } %>
+            <% if (currentPhase[league.slug]) { %>
+              <p class="text-xs text-neutral-400 mb-2">⚔️ Fase actual: <%= currentPhase[league.slug] %></p>
+            <% } %>
+            <ul class="divide-y divide-neutral-800 rounded-lg border border-neutral-800">
+              <% games.forEach(g => gameRow(g)) %>
+            </ul>
+          </section>
+        <% }) %>
+      </div>
+    <% } %>
+  <% } else { %>
+    <% if (games.length === 0) { %>
+      <p class="text-neutral-500 text-sm">No hay resultados para el filtro elegido.</p>
+    <% } else { %>
+      <ul class="divide-y divide-neutral-800 rounded-lg border border-neutral-800">
+        <% games.forEach(g => gameRow(g)) %>
+      </ul>
+    <% } %>
+  <% } %>
+</main>
+<%- include("../partials/footer") %>

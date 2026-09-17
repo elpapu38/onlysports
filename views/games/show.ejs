@@ -1,0 +1,62 @@
+<%- include("../partials/header") %>
+<main class="max-w-4xl mx-auto px-4 py-6 space-y-6">
+  <div>
+    <p class="text-sm text-neutral-500"><%= game.league.name %> · <%= game.sport.name %></p>
+    <h1 class="text-2xl font-semibold">
+      <%= game.homeTeam.name %> <%= game.homeScore ?? "-" %> — <%= game.awayScore ?? "-" %> <%= game.awayTeam.name %>
+    </h1>
+    <p class="text-sm text-neutral-400"><%= fmtDateTime(game.date) %> (ARG) · <%= game.status %></p>
+    <% const round = findRound(game.statistics); %>
+    <% const champion = championName(game); %>
+    <% if (champion) { %>
+      <p class="text-sm text-amber-400 mt-1">🏆 Campeón: <%= champion %></p>
+    <% } else if (round) { %>
+      <p class="text-sm text-neutral-500 mt-1"><%= round %></p>
+    <% } %>
+  </div>
+
+  <% const goals = game.statistics.filter(s => s.key === "gol"); %>
+  <% if (goals.length > 0) { %>
+    <section>
+      <h2 class="font-semibold mb-2">⚽ Goles</h2>
+      <ul class="space-y-1 text-sm text-neutral-300">
+        <% goals.forEach(g => { %>
+          <li><%= g.value %></li>
+        <% }) %>
+      </ul>
+    </section>
+  <% } %>
+
+  <section>
+    <h2 class="font-semibold mb-2">📺 Fuentes disponibles</h2>
+    <% if (game.streams.length === 0) { %>
+      <p class="text-sm text-neutral-500">Todavía no hay ninguna fuente cargada para este partido. Podés agregar una desde el panel admin.</p>
+    <% } else { %>
+      <ul class="space-y-2">
+        <% game.streams.forEach(s => { %>
+          <li class="rounded border border-neutral-800 p-3 text-sm flex items-center justify-between">
+            <span><%= s.type %> <% if (s.label) { %>— <%= s.label %><% } %></span>
+            <a class="text-blue-400 hover:underline" href="<%= s.value %>" target="_blank" rel="noopener">Abrir</a>
+          </li>
+        <% }) %>
+      </ul>
+    <% } %>
+  </section>
+
+  <section>
+    <h2 class="font-semibold mb-2">🎥 Videos</h2>
+    <% if (game.videos.length === 0) { %>
+      <p class="text-sm text-neutral-500">Sin videos asociados todavía.</p>
+    <% } else { %>
+      <ul class="space-y-2">
+        <% game.videos.forEach(v => { %>
+          <li class="rounded border border-neutral-800 p-3 text-sm flex items-center justify-between">
+            <span><%= v.type %> <% if (v.title) { %>— <%= v.title %><% } %></span>
+            <a class="text-blue-400 hover:underline" href="<%= v.url %>" target="_blank" rel="noopener">Ver</a>
+          </li>
+        <% }) %>
+      </ul>
+    <% } %>
+  </section>
+</main>
+<%- include("../partials/footer") %>

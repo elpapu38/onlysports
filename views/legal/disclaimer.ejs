@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %> · <%= appName %></title>
+  <link rel="stylesheet" href="/css/app.css" />
+</head>
+<body class="bg-neutral-950 text-neutral-100 min-h-screen flex items-center justify-center px-4">
+  <div class="max-w-lg w-full rounded-lg border border-neutral-800 bg-neutral-900/60 p-6 space-y-4">
+    <h1 class="text-lg font-semibold">🏆 <%= appName %> — antes de continuar</h1>
+
+    <div class="text-sm text-neutral-300 space-y-3">
+      <p>
+        <%= appName %> es un <b>agregador personal</b>: no aloja, no distribuye ni incluye ningún
+        canal, transmisión o video. Cada instancia arranca sin ningún enlace cargado.
+      </p>
+      <p>
+        Si vos (u otra persona con acceso a esta instancia) cargan un canal o stream, son <b>ustedes
+        los responsables</b> de que esa fuente sea legítima: un embed oficial (YouTube, Twitch, Vimeo)
+        o contenido sobre el que tengan derecho a acceder. Esta app no debe usarse para retransmitir
+        señales sin autorización ni para evadir restricciones o DRM de ninguna plataforma.
+      </p>
+      <p class="text-neutral-500">
+        Este software se ofrece "tal cual", con fines de uso personal y de aprendizaje, sin garantías.
+        No se permite su uso para vender acceso a contenido ni para operar un servicio comercial de
+        streaming.
+      </p>
+    </div>
+
+    <form method="POST" action="/legal/disclaimer/accept" class="pt-2">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+      <input type="hidden" name="next" value="<%= next %>" />
+      <button class="w-full rounded bg-blue-600 hover:bg-blue-500 px-4 py-2 text-sm font-medium">
+        Entiendo y acepto
+      </button>
+    </form>
+  </div>
+</body>
+</html>

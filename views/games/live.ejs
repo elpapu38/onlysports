@@ -1,0 +1,18 @@
+<%- include("../partials/header") %>
+<main class="max-w-6xl mx-auto px-4 py-6">
+  <h1 class="text-xl font-semibold mb-4">🔴 En vivo</h1>
+  <% if (games.length === 0) { %>
+    <p class="text-neutral-500 text-sm">No hay partidos en vivo en este momento.</p>
+  <% } else { %>
+    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <% games.forEach(g => { %>
+        <a href="/partidos/<%= g.id %>" class="block rounded-lg border border-red-900/60 bg-red-950/20 p-4 hover:border-red-500 transition">
+          <p class="text-xs text-red-400 font-medium mb-1">🔴 <%= g.league.name %> · <%= fmtTime(g.date) %> (ARG)</p>
+          <p class="font-medium"><%= g.homeTeam.name %> <%= g.homeScore ?? "-" %> — <%= g.awayScore ?? "-" %> <%= g.awayTeam.name %></p>
+          <p class="text-xs text-neutral-500 mt-2"><%= g.streams.length %> fuente(s) disponible(s)</p>
+        </a>
+      <% }) %>
+    </div>
+  <% } %>
+</main>
+<%- include("../partials/footer") %>

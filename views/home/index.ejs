@@ -1,0 +1,53 @@
+<%- include("../partials/header") %>
+<main class="max-w-6xl mx-auto px-4 py-6 space-y-10">
+
+  <section>
+    <h1 class="text-xl font-semibold mb-3">🔴 En vivo</h1>
+    <% if (live.length === 0) { %>
+      <p class="text-neutral-500 text-sm">No hay partidos en vivo en este momento.</p>
+    <% } else { %>
+      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <% live.forEach(g => { %>
+          <a href="/partidos/<%= g.id %>" class="block rounded-lg border border-red-900/60 bg-red-950/20 p-4 hover:border-red-500 transition">
+            <p class="text-xs text-red-400 font-medium mb-1">🔴 <%= g.league.name %> · <%= fmtTime(g.date) %> (ARG)</p>
+            <p class="font-medium"><%= g.homeTeam.name %> <%= g.homeScore ?? "-" %> — <%= g.awayScore ?? "-" %> <%= g.awayTeam.name %></p>
+          </a>
+        <% }) %>
+      </div>
+    <% } %>
+  </section>
+
+  <section>
+    <h1 class="text-xl font-semibold mb-3">📅 Próximos partidos</h1>
+    <% if (upcomingGroups.length === 0) { %>
+      <p class="text-neutral-500 text-sm">No hay partidos próximos cargados todavía.</p>
+    <% } else { %>
+      <div class="space-y-6">
+        <% upcomingGroups.forEach(({ league, games }) => { %>
+          <div>
+            <h2 class="text-sm font-semibold text-neutral-400 mb-2"><%= league.sport.name %> · <%= league.name %></h2>
+            <% if (currentPhase[league.slug]) { %>
+              <p class="text-xs text-neutral-500 mb-2">⚔️ Fase actual: <%= currentPhase[league.slug] %></p>
+            <% } %>
+            <ul class="divide-y divide-neutral-800 rounded-lg border border-neutral-800">
+              <% games.forEach(g => { %>
+                <li class="p-4 flex items-center justify-between text-sm">
+                  <span>
+                    <%= g.homeTeam.name %> vs <%= g.awayTeam.name %>
+                    <% const round = findRound(g.statistics); %>
+                    <% if (round) { %>
+                      <span class="block text-xs text-neutral-500"><%= round %></span>
+                    <% } %>
+                  </span>
+                  <span class="text-neutral-400"><%= fmtDateTime(g.date) %> (ARG)</span>
+                </li>
+              <% }) %>
+            </ul>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </section>
+
+</main>
+<%- include("../partials/footer") %>

@@ -1,0 +1,55 @@
+<%- include("../partials/header") %>
+<main class="max-w-lg mx-auto px-4 py-6">
+  <h1 class="text-xl font-semibold mb-4">+ Agregar canal</h1>
+  <p class="text-xs text-neutral-500 mb-4">
+    Pegá el enlace que ya tengas (YouTube, Twitch, M3U8/HLS, Vimeo, MP4/WebM u otra URL).
+    Nada de esto se sube a ningún lado: queda solo en tu base de datos local.
+  </p>
+  <form method="POST" action="/channels" class="space-y-4">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+    <div>
+      <label class="block text-sm mb-1">Nombre</label>
+      <input name="name" required class="w-full rounded bg-neutral-900 border border-neutral-800 px-3 py-2 text-sm" />
+    </div>
+    <div>
+      <label class="block text-sm mb-1">Tipo</label>
+      <select id="channel-type" name="type" class="w-full rounded bg-neutral-900 border border-neutral-800 px-3 py-2 text-sm">
+        <option value="YOUTUBE">YouTube (embed oficial)</option>
+        <option value="TWITCH">Twitch (embed oficial)</option>
+        <option value="VIMEO">Vimeo (embed oficial)</option>
+      </select>
+    </div>
+
+    <div class="border-t border-neutral-800 pt-4">
+      <label class="flex items-center gap-2 text-sm text-neutral-400">
+        <input type="checkbox" id="advanced-toggle" class="rounded border-neutral-700 bg-neutral-900" />
+        Mostrar opciones avanzadas (M3U8/HLS, MP4/WebM, URL genérica)
+      </label>
+      <div id="advanced-warning" class="hidden mt-3 text-xs text-amber-400 bg-amber-950/30 border border-amber-900/50 rounded p-3">
+        Estas opciones sirven para reproducir un archivo o playlist directamente en el navegador
+        (hls.js / &lt;video&gt;), sin pasar por un embed oficial de la plataforma. Usalas solo con
+        fuentes sobre las que tengas derecho a acceder — nunca para retransmitir señales de TV, ligas
+        o eventos con derechos protegidos (por ejemplo, transmisiones de la UEFA, ligas de fútbol,
+        NBA, etc. sin autorización). Vos sos responsable de lo que cargués acá.
+      </div>
+      <select id="advanced-type" name="type_advanced" disabled class="hidden mt-3 w-full rounded bg-neutral-900 border border-amber-900/50 px-3 py-2 text-sm">
+        <option value="M3U8">M3U8 / HLS</option>
+        <option value="MP4">MP4</option>
+        <option value="WEBM">WebM</option>
+        <option value="URL">URL genérica</option>
+      </select>
+    </div>
+    <div>
+      <label class="block text-sm mb-1">Enlace / canal</label>
+      <input name="value" required placeholder="https://..." class="w-full rounded bg-neutral-900 border border-neutral-800 px-3 py-2 text-sm" />
+    </div>
+    <div>
+      <label class="block text-sm mb-1">Notas (opcional)</label>
+      <textarea name="notes" class="w-full rounded bg-neutral-900 border border-neutral-800 px-3 py-2 text-sm"></textarea>
+    </div>
+    <button class="rounded bg-blue-600 hover:bg-blue-500 px-4 py-2 text-sm">Guardar canal</button>
+  </form>
+</main>
+
+<script src="/js/channel-form.js"></script>
+<%- include("../partials/footer") %>

@@ -1,0 +1,17 @@
+# Docker es OPCIONAL. Solo tiene sentido si en algún momento querés
+# levantar OnlySports como servicio web compartido (varias personas
+# accediendo al mismo tiempo a la misma URL) en vez de usar la app
+# de escritorio (Electron), que no necesita nada de esto.
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    env_file: .env
+    environment:
+      DATABASE_URL: "file:/data/onlysports.db"
+    volumes:
+      - sqlite_data:/data
+
+volumes:
+  sqlite_data:

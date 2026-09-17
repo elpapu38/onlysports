@@ -1,0 +1,235 @@
+// Sports Hub (OnlySports) — Prisma schema
+// SQLite: cada instalación (de escritorio, vía Electron) guarda su
+// propio archivo .db local. Modelo genérico para no crear tablas
+// específicas por deporte.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// ─────────────────────────────────────────────
+// Núcleo deportivo
+// ─────────────────────────────────────────────
+
+model Sport {
+  id        Int      @id @default(autoincrement())
+  name      String
+  slug      String   @unique
+  leagues   League[]
+  teams     Team[]
+  games     Game[]
+  channels  Channel[]
+  createdAt DateTime @default(now())
+}
+
+model League {
+  id        Int       @id @default(autoincrement())
+  name      String
+  slug      String    @unique
+  sport     Sport     @relation(fields: [sportId], references: [id])
+  sportId   Int
+  seasons   Season[]
+  teams     Team[]
+  games     Game[]
+  standings Standing[]
+  channels  Channel[]
+  createdAt DateTime  @default(now())
+}
+
+model Season {
+  id        Int        @id @default(autoincrement())
+  name      String
+  year      Int
+  league    League     @relation(fields: [leagueId], references: [id])
+  leagueId  Int
+  games     Game[]
+  standings Standing[]
+  createdAt DateTime   @default(now())
+
+  @@unique([leagueId, name])
+}
+
+model Team {
+  id           Int          @id @default(autoincrement())
+  name         String
+  shortName    String?
+  logoUrl      String?
+  sport        Sport        @relation(fields: [sportId], references: [id])
+  sportId      Int
+  league       League?      @relation(fields: [leagueId], references: [id])
+  leagueId     Int?
+  players      Player[]
+  homeGames    Game[]       @relation("HomeTeam")
+  awayGames    Game[]       @relation("AwayTeam")
+  standings    Standing[]
+  gameStatistics GameStatistic[]
+  createdAt    DateTime     @default(now())
+}
+
+model Player {
+  id        Int      @id @default(autoincrement())
+  name      String
+  position  String?
+  number    Int?
+  team      Team     @relation(fields: [teamId], references: [id])
+  teamId    Int
+  stats     GameStatistic[]
+  createdAt DateTime @default(now())
+}
+
+enum GameStatus {
+  SCHEDULED
+  LIVE
+  FINISHED
+  POSTPONED
+  CANCELLED
+}
+
+model Game {
+  id             Int             @id @default(autoincrement())
+  sport          Sport           @relation(fields: [sportId], references: [id])
+  sportId        Int
+  league         League          @relation(fields: [leagueId], references: [id])
+  leagueId       Int
+  season         Season?         @relation(fields: [seasonId], references: [id])
+  seasonId       Int?
+  homeTeam       Team            @relation("HomeTeam", fields: [homeTeamId], references: [id])
+  homeTeamId     Int
+  awayTeam       Team            @relation("AwayTeam", fields: [awayTeamId], references: [id])
+  awayTeamId     Int
+  date           DateTime
+  status         GameStatus      @default(SCHEDULED)
+  homeScore      Int?
+  awayScore      Int?
+  externalId     String?         // id en la fuente/proveedor original
+  providerSource String?         // ej: "nba-provider", "mlb-provider"
+  statistics     GameStatistic[]
+  streams        Stream[]
+  videos         Video[]
+  favorites      FavoriteGame[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@unique([providerSource, externalId])
+  @@index([date])
+  @@index([status])
+}
+
+model GameStatistic {
+  id       Int     @id @default(autoincrement())
+  game     Game    @relation(fields: [gameId], references: [id])
+  gameId   Int
+  team     Team?   @relation(fields: [teamId], references: [id])
+  teamId   Int?
+  player   Player? @relation(fields: [playerId], references: [id])
+  playerId Int?
+  key      String  // ej: "points", "rebounds", "goals", "hits"
+  value    String  // guardado como string para ser genérico entre deportes
+
+  @@index([gameId])
+}
+
+model Standing {
+  id       Int     @id @default(autoincrement())
+  league   League  @relation(fields: [leagueId], references: [id])
+  leagueId Int
+  season   Season  @relation(fields: [seasonId], references: [id])
+  seasonId Int
+  team     Team    @relation(fields: [teamId], references: [id])
+  teamId   Int
+  played   Int     @default(0)
+  wins     Int     @default(0)
+  losses   Int     @default(0)
+  draws    Int     @default(0)
+  points   Int     @default(0)
+  rank     Int?
+
+  @@unique([leagueId, seasonId, teamId])
+}
+
+// ─────────────────────────────────────────────
+// Multimedia: streams asociados a un partido puntual
+// ─────────────────────────────────────────────
+
+enum StreamType {
+  YOUTUBE
+  M3U8
+  TWITCH
+  VIMEO
+  MP4
+  WEBM
+  URL
+}
+
+model Stream {
+  id          Int        @id @default(autoincrement())
+  game        Game       @relation(fields: [gameId], references: [id])
+  gameId      Int
+  type        StreamType
+  value       String     // URL, video id, o "canal" según el tipo
+  label       String?
+  isUserAdded Boolean    @default(true) // las fuentes de streaming casi siempre las carga el usuario/administrador
+  createdAt   DateTime   @default(now())
+
+  @@index([gameId])
+}
+
+enum VideoType {
+  REPLAY
+  HIGHLIGHTS
+  SUMMARY
+  OTHER
+}
+
+model Video {
+  id        Int        @id @default(autoincrement())
+  game      Game       @relation(fields: [gameId], references: [id])
+  gameId    Int
+  type      VideoType  @default(OTHER)
+  source    StreamType
+  url       String
+  title     String?
+  createdAt DateTime   @default(now())
+
+  @@index([gameId])
+}
+
+// ─────────────────────────────────────────────
+// Canales deportivos (no ligados a un partido puntual)
+// El repositorio NO incluye enlaces: cada usuario carga los propios
+// al clonar el proyecto, vía el panel admin o el endpoint de import.
+// ─────────────────────────────────────────────
+
+model Channel {
+  id        Int        @id @default(autoincrement())
+  name      String
+  type      StreamType
+  value     String     // URL, canal de Twitch, id de video/live de YouTube, m3u8, etc.
+  logoUrl   String?
+  sport     Sport?     @relation(fields: [sportId], references: [id])
+  sportId   Int?
+  league    League?    @relation(fields: [leagueId], references: [id])
+  leagueId  Int?
+  isLive    Boolean    @default(true)
+  notes     String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+// ─────────────────────────────────────────────
+// Datos personales del usuario (respaldables vía export/import)
+// ─────────────────────────────────────────────
+
+model FavoriteGame {
+  id        Int      @id @default(autoincrement())
+  game      Game     @relation(fields: [gameId], references: [id])
+  gameId    Int
+  note      String?
+  createdAt DateTime @default(now())
+
+  @@unique([gameId])
+}

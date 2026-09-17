@@ -1,0 +1,100 @@
+<%- include("../../partials/header") %>
+<main class="max-w-lg mx-auto px-4 py-6">
+  <h1 class="text-xl font-semibold mb-4"><%= game ? "Editar partido" : "Nuevo partido" %></h1>
+  <% if (sports.length === 0 || leagues.length === 0 || teams.length < 2) { %>
+    <p class="text-sm text-amber-400">
+      Para cargar un partido necesitás al menos un <a href="/panel/sports/new" class="underline">deporte</a>,
+      una <a href="/panel/leagues/new" class="underline">liga</a> y dos <a href="/panel/teams/new" class="underline">equipos</a>.
+    </p>
+  <% } else {
+    // Convierte la fecha guardada al formato que espera <input type="datetime-local">
+    let dateValue = "";
+    if (game) {
+      const d = new Date(game.date);
+      const pad = (n) => String(n).padStart(2, "0");
+      dateValue = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+  %>
+    <form method="POST" action="<%= game ? `/panel/games/${game.id}` : '/panel/games' %>" class="space-y-4">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+
+      <div>
+        <label class="block text-sm mb-1">Deporte</label>
+        <select name="sportId" required class="w-full rounded bg-neutral-900 border border-neutral-800 px-3 py-2 text-sm">
+          <% sports.forEach(s => { %>
+            <option value="<%= s.id %>" <%= game && game.sportId === s.id ? "selected" : "" %>><%= s.name %></option>
+          <% }) %>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm mb-1">Liga</label>
+        <select name="leagueId" required class="w-full rounded bg-neutral-900 border border-neutral-800 px-3 py-2 text-sm">
+          <% leagues.forEach(l => { %>
+            <option value="<%= l.id %>" <%= game && game.leagueId === l.id ? "selected" : "" %>><%= l.name %> (<%= l.sport.name %>)</option>
+          <% }) %>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm mb-1">Temporada (opcional)</label>
+        <select name="seasonId" class="w-full rounded bg-neutral-900 border border-neutral-800 px-3 py-2 text-sm">
+          <option value="">— Sin temporada —</option>
+          <% seasons.forEach(se => { %>
+            <option value="<%= se.id %>" <%= game && game.seasonId === se.id ? "selected" : "" %>><%= se.name %> (<%= se.year %>)</option>
+          <% }) %>
+        </select>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-sm mb-1">Equipo local</label>
+          <select name="homeTeamId" required class="w-full rounded bg-neutral-900 border border-neutral-800 px-3 py-2 text-sm">
+            <% teams.forEach(t => { %>
+              <option value="<%= t.id %>" <%= game && game.homeTeamId === t.id ? "selected" : "" %>><%= t.name %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm mb-1">Equipo visitante</label>
+          <select name="awayTeamId" required class="w-full rounded bg-neutral-900 border border-neutral-800 px-3 py-2 text-sm">
+            <% teams.forEach(t => { %>
+              <option value="<%= t.id %>" <%= game && game.awayTeamId === t.id ? "selected" : "" %>><%= t.name %></option>
+            <% }) %>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm mb-1">Fecha y hora</label>
+        <input type="datetime-local" name="date" required value="<%= dateValue %>"
+          class="w-full rounded bg-neutral-900 border border-neutral-800 px-3 py-2 text-sm" />
+      </div>
+
+      <div>
+        <label class="block text-sm mb-1">Estado</label>
+        <select name="status" class="w-full rounded bg-neutral-900 border border-neutral-800 px-3 py-2 text-sm">
+          <% ["SCHEDULED", "LIVE", "FINISHED", "POSTPONED", "CANCELLED"].forEach(st => { %>
+            <option value="<%= st %>" <%= game && game.status === st ? "selected" : "" %>><%= st %></option>
+          <% }) %>
+        </select>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-sm mb-1">Goles/puntos local (opcional)</label>
+          <input type="number" name="homeScore" value="<%= game && game.homeScore !== null ? game.homeScore : '' %>"
+            class="w-full rounded bg-neutral-900 border border-neutral-800 px-3 py-2 text-sm" />
+        </div>
+        <div>
+          <label class="block text-sm mb-1">Goles/puntos visitante (opcional)</label>
+          <input type="number" name="awayScore" value="<%= game && game.awayScore !== null ? game.awayScore : '' %>"
+            class="w-full rounded bg-neutral-900 border border-neutral-800 px-3 py-2 text-sm" />
+        </div>
+      </div>
+
+      <button class="rounded bg-blue-600 hover:bg-blue-500 px-4 py-2 text-sm">Guardar</button>
+    </form>
+  <% } %>
+</main>
+<%- include("../../partials/footer") %>

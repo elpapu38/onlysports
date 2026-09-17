@@ -1,0 +1,26 @@
+<%- include("../../partials/header") %>
+<main class="max-w-3xl mx-auto px-4 py-6 space-y-4">
+  <div class="flex items-center justify-between">
+    <h1 class="text-xl font-semibold">👕 Equipos</h1>
+    <a href="/panel/teams/new" class="text-sm rounded bg-blue-600 hover:bg-blue-500 px-3 py-1.5">+ Nuevo</a>
+  </div>
+  <% if (teams.length === 0) { %>
+    <p class="text-neutral-500 text-sm">Todavía no cargaste ningún equipo.</p>
+  <% } else { %>
+    <ul class="divide-y divide-neutral-800 rounded-lg border border-neutral-800">
+      <% teams.forEach(t => { %>
+        <li class="p-4 flex items-center justify-between text-sm">
+          <span><%= t.name %> <span class="text-neutral-500">· <%= t.sport.name %><% if (t.league) { %> · <%= t.league.name %><% } %></span></span>
+          <div class="flex items-center gap-3">
+            <a href="/panel/teams/<%= t.id %>/edit" class="text-blue-400 hover:underline">Editar</a>
+            <form method="POST" action="/panel/teams/<%= t.id %>/delete">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+              <button class="text-neutral-500 hover:text-red-400">Eliminar</button>
+            </form>
+          </div>
+        </li>
+      <% }) %>
+    </ul>
+  <% } %>
+</main>
+<%- include("../../partials/footer") %>

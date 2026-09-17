@@ -1,0 +1,100 @@
+{
+  "name": "onlysports",
+  "version": "0.1.0",
+  "description": "Sports Hub (OnlySports) — agregador deportivo personal y extensible: resultados, calendarios, en vivo, estadísticas, canales y multimedia.",
+  "private": true,
+  "type": "commonjs",
+  "main": "dist/electron/main.js",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc -p tsconfig.json && tsc-alias -p tsconfig.json",
+    "start": "node dist/server.js",
+    "prisma:generate": "prisma generate",
+    "prisma:push": "prisma db push",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:deploy": "prisma migrate deploy",
+    "prisma:studio": "prisma studio",
+    "prisma:template": "node scripts/build-template-db.js",
+    "db:seed": "tsx prisma/seed.ts",
+    "css:build": "tailwindcss -i ./src/styles/input.css -o ./public/css/app.css --minify",
+    "css:watch": "tailwindcss -i ./src/styles/input.css -o ./public/css/app.css --watch",
+    "electron:rebuild": "electron-rebuild -f -w better-sqlite3",
+    "electron:dev": "npm run prisma:template && npm run build && npm run css:build && npm run electron:rebuild && electron dist/electron/main.js",
+    "electron:build": "npm run prisma:template && npm run build && npm run css:build && electron-builder",
+    "test": "node --test tests/",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@prisma/adapter-better-sqlite3": "^7.9.1",
+    "@prisma/client": "^7.9.1",
+    "better-sqlite3": "^13.0.3",
+    "cheerio": "^1.2.0",
+    "compression": "^1.8.1",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "csrf-csrf": "^4.0.3",
+    "dotenv": "^17.4.2",
+    "ejs": "^6.0.1",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.6.2",
+    "helmet": "^8.3.0",
+    "ioredis": "^6.0.0",
+    "morgan": "^1.11.0",
+    "node-cron": "^4.6.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/compression": "^1.8.1",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/cors": "^2.8.19",
+    "@types/ejs": "^3.1.5",
+    "@types/express": "^5.0.6",
+    "@types/morgan": "^1.9.10",
+    "@types/node": "^26.2.0",
+    "@types/node-cron": "^3.0.11",
+    "electron": "^43.4.0",
+    "electron-builder": "^26.15.3",
+    "@electron/rebuild": "^4.2.0",
+    "prisma": "^7.9.1",
+    "tailwindcss": "^4.3.3",
+    "@tailwindcss/cli": "^4.3.3",
+    "tsc-alias": "^1.9.1",
+    "tsx": "^4.23.12",
+    "typescript": "^7.0.2"
+  },
+  "build": {
+    "appId": "app.onlysports.desktop",
+    "productName": "OnlySports",
+    "files": [
+      "dist/**/*",
+      "views/**/*",
+      "public/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      { "from": "prisma/app-template.db", "to": "app-template.db" }
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "asarUnpack": [
+      "**/node_modules/better-sqlite3/**",
+      "**/node_modules/@prisma/**",
+      "**/node_modules/.prisma/**"
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "mac": {
+      "target": "dmg",
+      "category": "public.app-category.sports"
+    },
+    "linux": {
+      "target": "AppImage",
+      "category": "Network"
+    }
+  }
+}

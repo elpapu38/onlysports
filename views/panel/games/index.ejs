@@ -1,0 +1,40 @@
+<%- include("../../partials/header") %>
+<main class="max-w-4xl mx-auto px-4 py-6 space-y-4">
+  <div class="flex items-center justify-between">
+    <h1 class="text-xl font-semibold">⚽ Partidos y resultados</h1>
+    <a href="/panel/games/new" class="text-sm rounded bg-blue-600 hover:bg-blue-500 px-3 py-1.5">+ Nuevo</a>
+  </div>
+  <% if (games.length === 0) { %>
+    <p class="text-neutral-500 text-sm">Todavía no cargaste ningún partido.</p>
+  <% } else { %>
+    <ul class="divide-y divide-neutral-800 rounded-lg border border-neutral-800">
+      <% games.forEach(g => { %>
+        <li class="p-4 flex items-center justify-between text-sm gap-3">
+          <div>
+            <p>
+              <%= g.homeTeam.name %>
+              <% if (g.homeScore !== null && g.awayScore !== null) { %>
+                <b><%= g.homeScore %> - <%= g.awayScore %></b>
+              <% } else { %>
+                vs
+              <% } %>
+              <%= g.awayTeam.name %>
+            </p>
+            <p class="text-xs text-neutral-500">
+              <%= g.league.name %> · <%= new Date(g.date).toLocaleString("es-AR") %> ·
+              <span class="uppercase"><%= g.status %></span>
+            </p>
+          </div>
+          <div class="flex items-center gap-3 shrink-0">
+            <a href="/panel/games/<%= g.id %>/edit" class="text-blue-400 hover:underline">Editar</a>
+            <form method="POST" action="/panel/games/<%= g.id %>/delete">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+              <button class="text-neutral-500 hover:text-red-400">Eliminar</button>
+            </form>
+          </div>
+        </li>
+      <% }) %>
+    </ul>
+  <% } %>
+</main>
+<%- include("../../partials/footer") %>

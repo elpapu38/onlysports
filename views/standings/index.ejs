@@ -1,0 +1,69 @@
+<%- include("../partials/header") %>
+<main class="max-w-4xl mx-auto px-4 py-6">
+  <h1 class="text-xl font-semibold mb-4">📊 Posiciones</h1>
+
+  <% if (groups.length === 0) { %>
+    <p class="text-neutral-500 text-sm">
+      Todavía no hay tablas de posiciones sincronizadas. Probá forzar una sincronización desde
+      <a href="/panel" class="underline hover:text-neutral-300">Gestión</a>.
+    </p>
+  <% } else { %>
+    <div class="space-y-10">
+      <% groups.forEach(({ league, zones }) => { %>
+        <section>
+          <h2 class="text-base font-semibold mb-3"><%= league.sport.name %> · <%= league.name %></h2>
+          <% if (champions[league.slug]) { %>
+            <% championLines(champions[league.slug]).forEach(line => { %>
+              <p class="text-sm text-amber-400 mb-1"><%= line %></p>
+            <% }) %>
+          <% } %>
+          <% if (currentPhase[league.slug]) { %>
+            <p class="text-sm text-neutral-400 mb-3">⚔️ Fase actual: <%= currentPhase[league.slug] %></p>
+          <% } else if (!champions[league.slug] && cupLeagueSlugs.has(league.slug)) { %>
+            <p class="text-sm text-neutral-500 mb-3">Todavía no hay campeón definido — el torneo sigue en curso.</p>
+          <% } %>
+          <div class="grid gap-6 <%= zones.length > 1 ? 'md:grid-cols-2' : '' %>">
+            <% zones.forEach(({ season, standings }) => { %>
+              <div>
+                <% if (zones.length > 1) { %>
+                  <h3 class="text-sm font-medium text-neutral-400 mb-2"><%= season.name %></h3>
+                <% } else { %>
+                  <p class="text-xs text-neutral-600 mb-2"><%= season.name %></p>
+                <% } %>
+                <div class="overflow-x-auto rounded-lg border border-neutral-800">
+                  <table class="w-full text-sm">
+                    <thead>
+                      <tr class="text-left text-neutral-500 border-b border-neutral-800">
+                        <th class="px-3 py-2 w-8">#</th>
+                        <th class="px-3 py-2">Equipo</th>
+                        <th class="px-3 py-2 text-center">PJ</th>
+                        <th class="px-3 py-2 text-center">G</th>
+                        <th class="px-3 py-2 text-center">E</th>
+                        <th class="px-3 py-2 text-center">P</th>
+                        <th class="px-3 py-2 text-center">Pts</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-neutral-800">
+                      <% standings.forEach(s => { %>
+                        <tr>
+                          <td class="px-3 py-2 text-neutral-500"><%= s.rank ?? "-" %></td>
+                          <td class="px-3 py-2 font-medium"><%= s.team.name %></td>
+                          <td class="px-3 py-2 text-center text-neutral-400"><%= s.played %></td>
+                          <td class="px-3 py-2 text-center text-neutral-400"><%= s.wins %></td>
+                          <td class="px-3 py-2 text-center text-neutral-400"><%= s.draws %></td>
+                          <td class="px-3 py-2 text-center text-neutral-400"><%= s.losses %></td>
+                          <td class="px-3 py-2 text-center font-semibold"><%= s.points %></td>
+                        </tr>
+                      <% }) %>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        </section>
+      <% }) %>
+    </div>
+  <% } %>
+</main>
+<%- include("../partials/footer") %>

@@ -1,0 +1,48 @@
+<%- include("../partials/header") %>
+<main class="max-w-4xl mx-auto px-4 py-6 space-y-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-xl font-semibold">🛠️ Gestión</h1>
+      <p class="text-sm text-neutral-500 mt-1">
+        Cargá a mano deportes, ligas, temporadas, equipos y partidos — pensado para ligas que no tienen
+        ninguna API pública (una liga barrial, un torneo local, etc.).
+      </p>
+    </div>
+    <button id="sync-now" class="shrink-0 text-sm rounded bg-neutral-800 hover:bg-neutral-700 px-3 py-1.5">
+      🔄 Sincronizar ahora
+    </button>
+  </div>
+  <p id="sync-result" class="text-xs text-neutral-500"></p>
+  <ul class="grid gap-3 sm:grid-cols-2">
+    <li class="rounded border border-neutral-800 p-4 hover:border-neutral-700">
+      <a href="/panel/sports" class="font-medium hover:underline">🏅 Deportes</a>
+      <p class="text-xs text-neutral-500 mt-1">Básquet, fútbol, béisbol, lo que necesites.</p>
+    </li>
+    <li class="rounded border border-neutral-800 p-4 hover:border-neutral-700">
+      <a href="/panel/leagues" class="font-medium hover:underline">🏆 Ligas</a>
+      <p class="text-xs text-neutral-500 mt-1">Cada liga pertenece a un deporte.</p>
+    </li>
+    <li class="rounded border border-neutral-800 p-4 hover:border-neutral-700">
+      <a href="/panel/seasons" class="font-medium hover:underline">📅 Temporadas</a>
+      <p class="text-xs text-neutral-500 mt-1">Cada temporada pertenece a una liga.</p>
+    </li>
+    <li class="rounded border border-neutral-800 p-4 hover:border-neutral-700">
+      <a href="/panel/teams" class="font-medium hover:underline">👕 Equipos</a>
+      <p class="text-xs text-neutral-500 mt-1">Cada equipo pertenece a un deporte y, opcionalmente, a una liga.</p>
+    </li>
+    <li class="rounded border border-neutral-800 p-4 hover:border-neutral-700 sm:col-span-2">
+      <a href="/panel/games" class="font-medium hover:underline">⚽ Partidos y resultados</a>
+      <p class="text-xs text-neutral-500 mt-1">Cargá el partido, y después volvé para poner el resultado cuando termine.</p>
+    </li>
+    <li class="rounded border border-neutral-800 p-4 hover:border-neutral-700">
+      <a href="/channels" class="font-medium hover:underline">📺 Canales</a>
+      <p class="text-xs text-neutral-500 mt-1">Canales en vivo cargados manualmente.</p>
+    </li>
+    <li class="rounded border border-neutral-800 p-4 hover:border-neutral-700">
+      <a href="/settings/backup" class="font-medium hover:underline">💾 Backup</a>
+      <p class="text-xs text-neutral-500 mt-1">Exportar/importar lo que cargaste.</p>
+    </li>
+  </ul>
+</main>
+<script src="/js/panel-sync.js"></script>
+<%- include("../partials/footer") %>
