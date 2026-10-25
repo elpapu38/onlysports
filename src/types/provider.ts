@@ -10,6 +10,21 @@ export interface NormalizedTeam {
   logoUrl?: string;
 }
 
+/**
+ * Evento cronológico de un partido (gol, tarjeta). Hoy lo llena
+ * solo ESPN (competitions[0].details[]), pero el formato es genérico.
+ */
+export interface NormalizedMatchEvent {
+  kind: "goal" | "penalty" | "own_goal" | "yellow" | "red";
+  /** Minuto tal cual lo muestra el proveedor, ej: "56'" o "90'+3'". */
+  minute: string;
+  /** Segundos desde el inicio (para ordenar). */
+  seconds?: number;
+  player: string;
+  /** Equipo al que ESPN asigna el evento (local/visitante). */
+  side?: "home" | "away";
+}
+
 export interface NormalizedGame {
   externalId: string;
   sportSlug: string;
@@ -25,6 +40,10 @@ export interface NormalizedGame {
    * saber el ganador.
    */
   winnerSide?: "home" | "away";
+  /** Cancha/estadio donde se juega, si el proveedor lo informa (ej: ESPN → competitions[0].venue.fullName). */
+  venue?: string;
+  /** Goles y tarjetas del partido, si el proveedor los informa. */
+  matchEvents?: NormalizedMatchEvent[];
   homeTeam: NormalizedTeam;
   awayTeam: NormalizedTeam;
   date: Date;

@@ -15,7 +15,7 @@ import { panelRoutes } from "@/routes/panelRoutes";
 import { notFoundHandler, errorHandler } from "@/middleware/errorHandler";
 import { disclaimerGate } from "@/middleware/disclaimer";
 import { fmtDate, fmtTime, fmtDateTime } from "@/utils/datetime";
-import { championName, findRound, championLines } from "@/utils/gamePresentation";
+import { championName, findRound, findVenue, parseMatchEvents, championLines } from "@/utils/gamePresentation";
 
 export function createApp() {
   const app = express();
@@ -105,6 +105,8 @@ export function createApp() {
   app.locals.fmtDateTime = fmtDateTime;
   app.locals.championName = championName;
   app.locals.findRound = findRound;
+  app.locals.findVenue = findVenue;
+  app.locals.parseMatchEvents = parseMatchEvents;
   app.locals.championLines = championLines;
 
   // Antes de dejar pasar a cualquier ruta que involucre contenido

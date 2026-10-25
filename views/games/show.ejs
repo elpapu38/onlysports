@@ -8,14 +8,54 @@
     <p class="text-sm text-neutral-400"><%= fmtDateTime(game.date) %> (ARG) · <%= game.status %></p>
     <% const round = findRound(game.statistics); %>
     <% const champion = championName(game); %>
+    <% const venue = findVenue(game.statistics); %>
     <% if (champion) { %>
       <p class="text-sm text-amber-400 mt-1">🏆 Campeón: <%= champion %></p>
     <% } else if (round) { %>
       <p class="text-sm text-neutral-500 mt-1"><%= round %></p>
     <% } %>
+    <% if (venue) { %>
+      <p class="text-sm text-neutral-500 mt-1">🏟️ <%= venue %></p>
+    <% } %>
   </div>
 
-  <% const goals = game.statistics.filter(s => s.key === "gol"); %>
+  <% const matchEvents = parseMatchEvents(game.statistics); %>
+  <% const keyEvents = matchEvents.filter(e => e.kind !== "yellow"); %>
+  <% const yellows = matchEvents.filter(e => e.kind === "yellow"); %>
+  <% const teamOf = (e) => e.side === "home" ? game.homeTeam.name : e.side === "away" ? game.awayTeam.name : ""; %>
+  <% const icon = { goal: "⚽", penalty: "⚽", own_goal: "⚽", red: "🟥", yellow: "🟨" }; %>
+  <% const note = { penalty: " (penal)", own_goal: " (en contra)" }; %>
+  <% if (keyEvents.length > 0) { %>
+    <section>
+      <h2 class="font-semibold mb-2">⚽ Goles y expulsiones</h2>
+      <ul class="space-y-1 text-sm text-neutral-300">
+        <% keyEvents.forEach(e => { %>
+          <li>
+            <span class="text-neutral-500 tabular-nums"><%= e.minute %></span>
+            <%= icon[e.kind] %> <%= e.player %><%= note[e.kind] || "" %>
+            <% if (teamOf(e)) { %><span class="text-neutral-500">· <%= teamOf(e) %></span><% } %>
+          </li>
+        <% }) %>
+      </ul>
+      <% if (yellows.length > 0) { %>
+        <details class="mt-3 text-sm text-neutral-400">
+          <summary class="cursor-pointer">🟨 Tarjetas amarillas (<%= yellows.length %>)</summary>
+          <ul class="space-y-1 mt-2">
+            <% yellows.forEach(e => { %>
+              <li>
+                <span class="text-neutral-500 tabular-nums"><%= e.minute %></span>
+                <%= e.player %>
+                <% if (teamOf(e)) { %><span class="text-neutral-500">· <%= teamOf(e) %></span><% } %>
+              </li>
+            <% }) %>
+          </ul>
+        </details>
+      <% } %>
+    </section>
+  <% } %>
+
+  <%# Respaldo: formato anterior (TheSportsDB), solo si ESPN no trajo eventos %>
+  <% const goals = keyEvents.length > 0 ? [] : game.statistics.filter(s => s.key === "gol"); %>
   <% if (goals.length > 0) { %>
     <section>
       <h2 class="font-semibold mb-2">⚽ Goles</h2>

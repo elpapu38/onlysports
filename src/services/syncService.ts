@@ -90,6 +90,9 @@ export const syncService = {
         if (gameRowForStats) {
           if (g.round) await upsertGameStatKey(gameRowForStats.id, "round", g.round);
           if (g.winnerSide) await upsertGameStatKey(gameRowForStats.id, "winner", g.winnerSide);
+          if (g.venue) await upsertGameStatKey(gameRowForStats.id, "venue", g.venue);
+          // Goles/tarjetas: un solo GameStatistic con la lista en JSON (mismo patrón que round/winner/venue).
+          if (g.matchEvents?.length) await upsertGameStatKey(gameRowForStats.id, "events", JSON.stringify(g.matchEvents));
         }
       } catch (err) {
         console.error(`[sync] Falló al guardar partido ${g.externalId}:`, err);

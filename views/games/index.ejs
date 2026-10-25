@@ -10,10 +10,14 @@
         </span>
         <% const round = findRound(g.statistics); %>
         <% const champion = championName(g); %>
+        <% const venue = findVenue(g.statistics); %>
         <% if (champion) { %>
-          <span class="text-xs text-amber-400">🏆 Campeón: <%= champion %></span>
+          <span class="block text-xs text-amber-400">🏆 Campeón: <%= champion %></span>
         <% } else if (round) { %>
-          <span class="text-xs text-neutral-500"><%= round %></span>
+          <span class="block text-xs text-neutral-500"><%= round %></span>
+        <% } %>
+        <% if (venue) { %>
+          <span class="block text-xs text-neutral-500 truncate">🏟️ <%= venue %></span>
         <% } %>
       </a>
       <span class="text-neutral-500 text-right shrink-0"><%= fmtDate(g.date) %></span>

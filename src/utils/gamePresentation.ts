@@ -27,6 +27,31 @@ export function findRound(statistics: { key: string; value: string }[] | undefin
   return statistics?.find((s) => s.key === "round")?.value;
 }
 
+export interface StoredMatchEvent {
+  kind: "goal" | "penalty" | "own_goal" | "yellow" | "red";
+  minute: string;
+  seconds?: number;
+  player: string;
+  side?: "home" | "away";
+}
+
+/** Goles y tarjetas guardados por el sync (GameStatistic key "events", JSON). Devuelve [] si no hay o está corrupto. */
+export function parseMatchEvents(statistics: { key: string; value: string }[] | undefined): StoredMatchEvent[] {
+  const raw = statistics?.find((s) => s.key === "events")?.value;
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as StoredMatchEvent[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+/** Cancha/estadio guardado como GameStatistic con key "venue" (si el proveedor lo informó). */
+export function findVenue(statistics: { key: string; value: string }[] | undefined): string | undefined {
+  return statistics?.find((s) => s.key === "venue")?.value;
+}
+
 function findWinnerSide(statistics: { key: string; value: string }[] | undefined): "home" | "away" | undefined {
   const value = statistics?.find((s) => s.key === "winner")?.value;
   return value === "home" || value === "away" ? value : undefined;
